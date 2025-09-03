@@ -1,0 +1,205 @@
+{
+  "name": "email-automation",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "labelIds": [
+            "Label_7701795492705986907"
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "34b637c1-0dac-452c-a8a0-cb41f5d1cf11",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5EbSqOcOboCcuKSJ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7504112c-8137-4c4f-bc8a-8a417d19741b",
+              "name": "=customer",
+              "value": "={{$json[\"from\"][\"text\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "35658d29-dfa9-4aed-8f6d-d324b8576bd1",
+              "name": "order",
+              "value": "={{$json[\"subject\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "b2c038df-965b-4f39-999a-d691d356138e",
+              "name": "message",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "5bb17645-510f-4a6b-9d9e-d63a84486b0c",
+              "name": "date",
+              "value": "={{ $json.date }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "ade0ede4-9b34-410b-bcda-716f0d2f0270",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "URL/HTML to PDF",
+        "convertType": "htmlToPDF",
+        "html": "=<h2>Invoice</h2>\n<p><b>Customer:</b> {{ $json.customer }}</p>\n<p><b>Order:</b> {{ $json.order }}</p>\n<p><b>Date:</b> {{ $json[\"date\"] }}</p>\n<hr>\n<p>Thank you for your order!</p>\n",
+        "advancedOptions": {
+          "name": "doc"
+        }
+      },
+      "type": "n8n-nodes-pdfco.PDFco Api",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "20bc0131-3717-4e64-9783-ab07e4b79319",
+      "name": "PDFco Api",
+      "credentials": {
+        "pdfcoApi": {
+          "id": "VLdgWdy6ROllh2zY",
+          "name": "PDF.co account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "5dc780db-bce4-4260-bd6b-038b779bc8d1",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "name": "doc",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        832,
+        0
+      ],
+      "id": "e25a072b-ce13-44e7-87c8-719c992bc0c5",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "NFcoNVm66IBp86Pl",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "PDFco Api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDFco Api": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d3e8d61f-b63e-49fc-96f5-5fd2574289d5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d3ba3e8527bb4df393c8455750cff27fe01b600680a1a7feaa9e4894b97b1afc"
+  },
+  "id": "GZC5MDonNpTp8VN6",
+  "tags": []
+}
