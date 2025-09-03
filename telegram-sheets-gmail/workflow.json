@@ -1,0 +1,389 @@
+{
+  "name": "telegram-to-sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -400,
+        -80
+      ],
+      "id": "9da392d3-acd7-4239-aae0-8140b3ac5e74",
+      "name": "Telegram Trigger",
+      "webhookId": "40ef735e-75ba-4b20-a6e2-5f5a4fde8ed9",
+      "credentials": {
+        "telegramApi": {
+          "id": "7r2mwuyE8RDBZpdu",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a69cb71b-ff24-412d-89e2-80a722a273d5",
+              "name": "chatID",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "677039c9-543b-4bcf-887f-0530f7e99602",
+              "name": "first_name",
+              "value": "={{ $json.message.chat.first_name }}",
+              "type": "string"
+            },
+            {
+              "id": "36a60b61-2e62-4a28-a70e-1e4837c04dbd",
+              "name": "last_name",
+              "value": "={{ $json.message.chat.last_name }}",
+              "type": "string"
+            },
+            {
+              "id": "ac0f3970-eab3-4216-91fc-1d095d985b40",
+              "name": "telegram_username",
+              "value": "={{ $json.message.chat.username }}",
+              "type": "string"
+            },
+            {
+              "id": "6b92d5cf-3693-4da9-ace5-68dc6e188971",
+              "name": "message.text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -176,
+        -80
+      ],
+      "id": "653f9766-de2a-467b-95f7-6a82837eaa3e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "d97a4bae-ff3d-4f40-84c7-4231f30d5336"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "first message ever"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a37c097b-bddb-4dd1-9b56-f1f6f45f8f82",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "not first"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        32,
+        -80
+      ],
+      "id": "94159e54-405b-4620-a456-41c8b647bc67",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zWEasEqizbmfSjpVBtr50Yn7d6UtDiSUU05Sal9LccA",
+          "mode": "list",
+          "cachedResultName": "telegram-tabelle",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zWEasEqizbmfSjpVBtr50Yn7d6UtDiSUU05Sal9LccA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Tabellenblatt1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zWEasEqizbmfSjpVBtr50Yn7d6UtDiSUU05Sal9LccA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $('Edit Fields').item.json.first_name }} {{ $('Edit Fields').item.json.last_name }}",
+            "username": "=@{{ $('Edit Fields').item.json.telegram_username }}",
+            "message": "={{ $('Edit Fields').item.json.message.text }}",
+            "date": "={{ $now.format('dd-MM-yyyy') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "username",
+              "displayName": "username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        288,
+        96
+      ],
+      "id": "bedfd91b-0bae-4cc4-b79c-21b01fb894a0",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t6CLtmgbp7Syano9",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 672,
+        "width": 1520,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -368
+      ],
+      "id": "b036ccb4-31cf-4d7e-b043-5c3b563d5ac6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "sendTo": "temajuck6@gmail.com",
+        "subject": "New Request from Telegram",
+        "message": "=<b>Name:</b> {{$json.name}}<br>\n<b>Username:</b> {{$json.username || '—'}}<br>\n<b>Message:</b> {{$json.message}}<br>\n<b>Date:</b> {{$json.formattedDate || $json.date}}\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        512,
+        96
+      ],
+      "id": "0b08c176-ca31-4051-9c12-1b2c15ddd474",
+      "name": "Send a message",
+      "webhookId": "293c13ad-951b-43b1-a8a2-b26b8a225b6f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5EbSqOcOboCcuKSJ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Edit Fields').item.json.chatID }}",
+        "text": "=Спасибо, {{ $('Append row in sheet').item.json.name }}!  \nВаша заявка получена ✅  \nМы скоро свяжемся с вами.\n",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        752,
+        96
+      ],
+      "id": "074c4306-21b7-4f3e-b19d-60b8f97144df",
+      "name": "Answer client",
+      "webhookId": "8cba63bd-934a-4b8a-845f-109583dce47b",
+      "credentials": {
+        "telegramApi": {
+          "id": "7r2mwuyE8RDBZpdu",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatID }}",
+        "text": "Hi! Say me about your problem ?",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        288,
+        -272
+      ],
+      "id": "c398715c-2e4e-4891-b73b-283a3754afb2",
+      "name": "Welcome Message",
+      "webhookId": "f170e72c-4be8-40c2-af56-fb4051bc6c7c",
+      "credentials": {
+        "telegramApi": {
+          "id": "7r2mwuyE8RDBZpdu",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Welcome Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Answer client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f96e73d5-3f1b-44d5-bb18-951c7e9e9132",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d3ba3e8527bb4df393c8455750cff27fe01b600680a1a7feaa9e4894b97b1afc"
+  },
+  "id": "l0JWy6ar7Ol5VN0Q",
+  "tags": []
+}
